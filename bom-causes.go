@@ -29,8 +29,9 @@ type DeathCauses struct {
 
 // Causes describes a cause of death.
 type Causes struct {
-	Name string `json:"name"`
-	ID   int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	ID          int    `json:"id"`
 }
 
 // DeathCausesHandler TODO: Describe
@@ -40,6 +41,7 @@ func (s *Server) DeathCausesHandler() http.HandlerFunc {
 	SELECT 
 		c.death_id,
 		c.death,
+		c.description,
 		c.count, 
 		c.week_id, 
 		w.week_no,
@@ -74,6 +76,7 @@ func (s *Server) DeathCausesHandler() http.HandlerFunc {
 	SELECT 
 		c.death_id, 
 		c.death,
+		c.description,
 		c.count, 
 		c.week_id, 
 		w.week_no,
@@ -201,7 +204,8 @@ func (s *Server) ListCausesHandler() http.HandlerFunc {
 	query := `
 	SELECT DISTINCT
 		death,
-		death_id
+		death_id,
+		description
 	FROM 
 		bom.causes_of_death
 	ORDER BY 
@@ -218,7 +222,7 @@ func (s *Server) ListCausesHandler() http.HandlerFunc {
 		}
 		defer rows.Close()
 		for rows.Next() {
-			err := rows.Scan(&row.Name, &row.ID)
+			err := rows.Scan(&row.Name, &row.ID, &row.Description)
 			if err != nil {
 				log.Println(err)
 			}
