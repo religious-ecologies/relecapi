@@ -1,0 +1,32 @@
+name: "Build and Publish, Deploy Docker Image"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "feature/cicd"
+    paths:
+      - "**"
+      - '!.github/**'
+
+jobs:
+  build-publish:
+    uses: chnm/.github/.github/workflows/docker--build-publish.yml@main
+    secrets: inherit
+    with:
+
+      container-registry: "ghcr.io"
+      container-image-name: "apiary"
+      
+      context-root: "."
+
+      website-devl-fqdn: "dev.apiary.rrchnm.org"
+      website-prod-fqdn: "data.chnm.org"
+  
+  deploy:
+    uses: chnm/.github/.github/workflows/docker--deploy.yml@main
+    needs: [build-publish]
+    secrets: inherit
+    with:
+      website-devl-fqdn: "dev.apiary.rrchnm.org"
+      website-prod-fqdn: "data.chnm.org"
